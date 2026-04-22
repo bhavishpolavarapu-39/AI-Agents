@@ -1,27 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.api import routes
 
 app = FastAPI(
-    title="PROJECT Operating System",
+    title="ORBIT Operating System",
     version="1.0.0",
-    description="Autonomous PROJECT agent"
+    description="Production-grade orbit AI operating system"
 )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:3001"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:3000"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
+app.include_router(routes.router)
 
 @app.get("/health")
 async def health():
-    return {"status": "healthy", "service": "PROJECT"}
-
-@app.get("/")
-async def root():
-    return {"message": "PROJECT Operating System API"}
+    return {"status": "operational", "service": "ORBIT"}
 
 if __name__ == "__main__":
     import uvicorn
