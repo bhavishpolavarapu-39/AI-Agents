@@ -337,3 +337,61 @@ async def get_geographic_diversification(holdings: str = None):
     
     analysis = await market_correlation_service.get_geographic_diversification_analysis(holdings_list)
     return analysis
+
+# ============ Innovative Features Endpoints ============
+
+@router.get("/apex/arbitrage-opportunities")
+async def get_arbitrage_opportunities(symbols: str = None):
+    """Detect cross-market arbitrage opportunities"""
+    from app.services.innovative_features_service import innovative_features_service
+    symbol_list = symbols.split(",") if symbols else []
+    opportunities = await innovative_features_service.detect_arbitrage_opportunities(symbol_list)
+    return opportunities
+
+@router.get("/apex/market-regime-advanced")
+async def get_advanced_market_regime():
+    """Advanced market regime detection with ML insights"""
+    from app.services.innovative_features_service import innovative_features_service
+    regime = await innovative_features_service.detect_market_regime()
+    return regime
+
+@router.post("/apex/sentiment-driven-rebalancing")
+async def get_sentiment_rebalancing(holdings_json: str = None):
+    """Generate sentiment-driven rebalancing suggestions"""
+    from app.services.innovative_features_service import innovative_features_service
+    holdings = []
+    if holdings_json:
+        import json
+        try:
+            holdings = json.loads(holdings_json)
+        except:
+            holdings = portfolios["default"]["holdings"]
+    else:
+        holdings = portfolios["default"]["holdings"]
+    
+    rebalancing = await innovative_features_service.get_sentiment_driven_rebalancing(holdings)
+    return rebalancing
+
+@router.post("/apex/geographic-risk-analysis")
+async def analyze_geographic_risk(holdings_json: str = None):
+    """Analyze geographic diversification and risks"""
+    from app.services.innovative_features_service import innovative_features_service
+    holdings = []
+    if holdings_json:
+        import json
+        try:
+            holdings = json.loads(holdings_json)
+        except:
+            holdings = portfolios["default"]["holdings"]
+    else:
+        holdings = portfolios["default"]["holdings"]
+    
+    analysis = await innovative_features_service.analyze_geographic_risks(holdings)
+    return analysis
+
+@router.get("/apex/macro-event-calendar")
+async def get_macro_calendar(days_ahead: int = 30):
+    """Get macro events that could impact portfolio"""
+    from app.services.innovative_features_service import innovative_features_service
+    calendar = await innovative_features_service.get_macro_event_calendar(days_ahead)
+    return calendar
