@@ -3,8 +3,19 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
+interface NewsArticle {
+  title: string;
+  summary: string;
+  source: string;
+  url: string;
+  publish_date: string;
+  sentiment?: string;
+  relevance_score?: number;
+  related_symbols?: string[];
+}
+
 export default function NewsSection({ symbols }: { symbols?: string[] }) {
-  const [news, setNews] = useState([]);
+  const [news, setNews] = useState<NewsArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -25,7 +36,7 @@ export default function NewsSection({ symbols }: { symbols?: string[] }) {
     fetchNews();
   }, [symbols]);
 
-  const getSentimentColor = (sentiment: string) => {
+  const getSentimentColor = (sentiment?: string) => {
     switch (sentiment?.toLowerCase()) {
       case 'positive':
         return 'bg-green-500/20 text-green-400';
@@ -50,7 +61,7 @@ export default function NewsSection({ symbols }: { symbols?: string[] }) {
       <div className="space-y-4 max-h-96 overflow-y-auto">
         {isLoading ? (
           <div className="text-center py-8">
-            <div className="inline-block w-8 h-8 border-2 border-green-500/30 border-t-green-500 rounded-full animate-spin"></div>
+            <div className="w-8 h-8 border-2 border-green-500/30 border-t-green-500 rounded-full animate-spin mx-auto"></div>
             <p className="text-slate-400 mt-3">Loading news...</p>
           </div>
         ) : news.length === 0 ? (
@@ -70,9 +81,11 @@ export default function NewsSection({ symbols }: { symbols?: string[] }) {
                   <h4 className="font-semibold text-white mb-1 line-clamp-2">{article.title}</h4>
                   <p className="text-xs text-slate-400">{article.source}</p>
                 </div>
-                <div className={`ml-3 px-2 py-1 rounded text-xs font-medium ${getSentimentColor(article.sentiment)}`}>
-                  {article.sentiment?.charAt(0).toUpperCase() + article.sentiment?.slice(1)}
-                </div>
+                {article.sentiment && (
+                  <div className={`ml-3 px-2 py-1 rounded text-xs font-medium ${getSentimentColor(article.sentiment)}`}>
+                    {article.sentiment.charAt(0).toUpperCase() + article.sentiment.slice(1)}
+                  </div>
+                )}
               </div>
               <p className="text-sm text-slate-300 line-clamp-2 mb-2">{article.summary}</p>
               <div className="flex justify-between items-end">

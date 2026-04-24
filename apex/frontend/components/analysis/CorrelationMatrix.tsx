@@ -3,10 +3,14 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
+interface CorrelationMatrix {
+  [key: string]: { [key: string]: number };
+}
+
 export default function CorrelationMatrix() {
-  const [matrix, setMatrix] = useState({});
+  const [matrix, setMatrix] = useState<CorrelationMatrix>({});
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedMarket, setSelectedMarket] = useState(null);
+  const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchMatrix = async () => {
@@ -24,7 +28,7 @@ export default function CorrelationMatrix() {
     fetchMatrix();
   }, []);
 
-  const getColor = (value) => {
+  const getCorrelationColor = (value: number) => {
     if (value > 0.7) return '#10b981';
     if (value > 0.5) return '#34d399';
     if (value > 0) return '#6ee7b7';
@@ -67,7 +71,11 @@ export default function CorrelationMatrix() {
             <tr>
               <th className="px-2 py-2 text-left text-slate-400"></th>
               {markets.map((market) => (
-                <th key={market} className="px-3 py-2 text-center text-slate-400 font-medium cursor-pointer hover:text-green-400" onClick={() => setSelectedMarket(selectedMarket === market ? null : market)}>
+                <th
+                  key={market}
+                  className="px-3 py-2 text-center text-slate-400 font-medium cursor-pointer hover:text-green-400 transition"
+                  onClick={() => setSelectedMarket(selectedMarket === market ? null : market)}
+                >
                   {market}
                 </th>
               ))}
@@ -83,8 +91,13 @@ export default function CorrelationMatrix() {
                   return (
                     <motion.td
                       key={`${market1}-${market2}`}
-                      className={`px-3 py-2 text-center text-white font-medium rounded transition ${isSelected ? 'ring-2 ring-green-500' : ''}`}
-                      style={{ backgroundColor: getColor(value), opacity: isSelected ? 1 : 0.7 }}
+                      className={`px-3 py-2 text-center text-white font-medium rounded transition ${
+                        isSelected ? 'ring-2 ring-green-500' : ''
+                      }`}
+                      style={{
+                        backgroundColor: getCorrelationColor(value),
+                        opacity: isSelected ? 1 : 0.7,
+                      }}
                       whileHover={{ scale: 1.1, opacity: 1 }}
                       title={`${market1} - ${market2}: ${value.toFixed(2)}`}
                     >

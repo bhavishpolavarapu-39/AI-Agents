@@ -3,8 +3,13 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
+interface MarketInfo {
+  status: string;
+  hours: string;
+}
+
 export default function MarketFilterBar() {
-  const [markets, setMarkets] = useState([]);
+  const [markets, setMarkets] = useState<string[]>([]);
   const [selected, setSelected] = useState('NYSE');
 
   useEffect(() => {
@@ -21,7 +26,7 @@ export default function MarketFilterBar() {
     fetchMarkets();
   }, []);
 
-  const marketInfo = {
+  const marketInfo: Record<string, MarketInfo> = {
     'NYSE': { status: 'open', hours: '9:30 AM - 4:00 PM EST' },
     'NASDAQ': { status: 'open', hours: '9:30 AM - 4:00 PM EST' },
     'NSE': { status: 'closed', hours: '9:15 AM - 3:30 PM IST' },

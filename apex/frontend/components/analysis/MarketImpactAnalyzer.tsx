@@ -3,10 +3,21 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 
+interface ImpactData {
+  ripple_effect_summary?: string;
+  impact_on_markets?: Record<string, {
+    correlation: number;
+    expected_change_percent: number;
+    direction: string;
+    confidence: string;
+    market_name: string;
+  }>;
+}
+
 export default function MarketImpactAnalyzer() {
   const [primaryMarket, setPrimaryMarket] = useState('NSE');
   const [priceChange, setPriceChange] = useState(2);
-  const [impactData, setImpactData] = useState(null);
+  const [impactData, setImpactData] = useState<ImpactData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const markets = ['NSE', 'BSE', 'NYSE', 'NASDAQ', 'LSE', 'TSE', 'HKEX', 'DAX'];
@@ -57,8 +68,21 @@ export default function MarketImpactAnalyzer() {
         <div>
           <label className="text-sm font-semibold text-slate-300 mb-2 block">Price Change %</label>
           <div className="flex gap-2">
-            <input type="range" min="-5" max="5" step="0.5" value={priceChange} onChange={(e) => setPriceChange(parseFloat(e.target.value))} className="flex-1" />
-            <input type="number" value={priceChange} onChange={(e) => setPriceChange(parseFloat(e.target.value))} className="w-20 bg-slate-800/50 border border-green-900/30 rounded-lg px-2 py-2 text-white focus:outline-none" />
+            <input
+              type="range"
+              min="-5"
+              max="5"
+              step="0.5"
+              value={priceChange}
+              onChange={(e) => setPriceChange(parseFloat(e.target.value))}
+              className="flex-1"
+            />
+            <input
+              type="number"
+              value={priceChange}
+              onChange={(e) => setPriceChange(parseFloat(e.target.value))}
+              className="w-20 bg-slate-800/50 border border-green-900/30 rounded-lg px-2 py-2 text-white focus:outline-none"
+            />
           </div>
         </div>
       </div>
@@ -77,23 +101,29 @@ export default function MarketImpactAnalyzer() {
         <motion.div className="space-y-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <div className="p-4 bg-slate-800/50 rounded-lg border border-green-900/20">
             <h4 className="text-sm font-semibold text-green-400 mb-2">Ripple Effect</h4>
-            <p className="text-sm text-slate-300">{impactData.ripple_effect_summary}</p>
+            <p className="text-sm text-slate-300">{impactData.ripple_effect_summary || 'Analyzing market impact...'}</p>
           </div>
 
           <div className="space-y-3">
             <h4 className="text-sm font-semibold text-slate-300">Expected Market Changes</h4>
-            {Object.entries(impactData.impact_on_markets || {})
-              .sort((a, b) => Math.abs(b[1].expected_change_percent) - Math.abs(a[1].expected_change_percent))
+            {impactData.impact_on_markets && Object.entries(impactData.impact_on_markets)
+              .sort((a, b) => Math.abs((b[1].expected_change_percent || 0)) - Math.abs((a[1].expected_change_percent || 0)))
               .slice(0, 5)
               .map(([market, impact]) => (
-                <motion.div key={market} className="p-3 bg-slate-800/30 rounded-lg border border-green-900/10" whileHover={{ x: 4 }}>
+                <motion.div
+                  key={market}
+                  className="p-3 bg-slate-800/30 rounded-lg border border-green-900/10"
+                  whileHover={{ x: 4 }}
+                >
                   <div className="flex justify-between items-center">
                     <div className="font-semibold text-white">{market}</div>
                     <div className={`text-lg font-bold ${impact.direction === '↑' ? 'text-green-400' : 'text-red-400'}`}>
-                      {impact.direction} {Math.abs(impact.expected_change_percent).toFixed(2)}%
+                      {impact.direction} {Math.abs(impact.expected_change_percent || 0).toFixed(2)}%
                     </div>
                   </div>
-                  <div className="text-xs text-slate-400 mt-1">Correlation: {impact.correlation?.toFixed(2) || 'N/A'}</div>
+                  <div className="text-xs text-slate-400 mt-1">
+                    Correlation: {(impact.correlation || 0).toFixed(2)}
+                  </div>
                 </motion.div>
               ))}
           </div>

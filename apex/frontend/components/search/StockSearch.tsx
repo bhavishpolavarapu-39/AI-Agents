@@ -3,9 +3,17 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 
+interface SearchResult {
+  symbol: string;
+  name: string;
+  market: string;
+  price?: number;
+  change?: number;
+}
+
 export default function StockSearch() {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSearch = async () => {
@@ -70,9 +78,9 @@ export default function StockSearch() {
                 <div className="text-xs text-slate-400">{result.name}</div>
               </div>
               <div className="text-right">
-                <div className="text-lg font-bold text-green-400">${result.price?.toFixed(2) || 'N/A'}</div>
-                <div className={`text-sm ${result.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  {result.change >= 0 ? '+' : ''}{result.change?.toFixed(2) || '0'}%
+                <div className="text-lg font-bold text-green-400">${(result.price || 0).toFixed(2)}</div>
+                <div className={`text-sm ${(result.change || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {(result.change || 0) >= 0 ? '+' : ''}{(result.change || 0).toFixed(2)}%
                 </div>
               </div>
             </div>
