@@ -1,5 +1,6 @@
-import './globals.css';
 import type { Metadata } from 'next';
+
+require('./globals.css');
 
 export const metadata: Metadata = {
   title: 'Operating System',
