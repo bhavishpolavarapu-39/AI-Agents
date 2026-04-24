@@ -22,7 +22,8 @@ export default function PortfolioSummary() {
   useEffect(() => {
     const fetchHoldings = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/apex/holdings');
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const response = await fetch(`${apiUrl}/api/apex/holdings`);
         const data = await response.json();
         setHoldings(data || []);
       } catch (error) {
@@ -79,7 +80,7 @@ export default function PortfolioSummary() {
             animate="visible"
           >
             {holdings.length === 0 ? (
-              <div className="text-slate-500 text-center py-8">No holdings</div>
+              <div className="text-slate-500 text-center py-8">No holdings - connect backend to see data</div>
             ) : (
               holdings.map((holding) => (
                 <motion.div
@@ -103,7 +104,7 @@ export default function PortfolioSummary() {
                           holding.gain_loss_percent >= 0 ? 'text-green-400' : 'text-red-400'
                         }`}
                       >
-                        {holding.gain_loss_percent >= 0 ? '[+]' : '[-]'}{holding.gain_loss_percent.toFixed(2)}%
+                        {holding.gain_loss_percent >= 0 ? '+' : ''}{holding.gain_loss_percent.toFixed(2)}%
                       </div>
                       <div className="text-xs text-slate-400">${holding.current_price.toFixed(2)}</div>
                     </div>
