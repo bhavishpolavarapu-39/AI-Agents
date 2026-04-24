@@ -2,7 +2,6 @@ from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 import json
 import asyncio
-from anthropic import Anthropic
 
 router = APIRouter(prefix="/api", tags=["apex"])
 
@@ -26,7 +25,15 @@ portfolios = {
 }
 
 conversation_history = []
-client = Anthropic()
+_client = None
+
+def get_client():
+    """Lazy-load the Anthropic client"""
+    global _client
+    if _client is None:
+        from anthropic import Anthropic
+        _client = Anthropic()
+    return _client
 
 # ============ Portfolio Endpoints ============
 
@@ -110,20 +117,29 @@ Holdings:
 
 You can analyze allocation, provide recommendations, discuss market trends, and optimize strategy."""
 
-    response = client.messages.create(
-        model="claude-3-5-sonnet-20241022",
-        max_tokens=1024,
-        system=system_prompt,
-        messages=conversation_history,
-    )
+    try:
+        client = get_client()
+        response = client.messages.create(
+            model="claude-3-5-sonnet-20241022",
+            max_tokens=1024,
+            system=system_prompt,
+            messages=conversation_history,
+        )
 
-    assistant_message = response.content[0].text
-    conversation_history.append({
-        "role": "assistant",
-        "content": assistant_message
-    })
+        assistant_message = response.content[0].text
+        conversation_history.append({
+            "role": "assistant",
+            "content": assistant_message
+        })
 
-    return {"response": assistant_message}
+        return {"response": assistant_message}
+    except Exception as e:
+        error_msg = f"AI Agent error: {str(e)}"
+        conversation_history.append({
+            "role": "assistant",
+            "content": error_msg
+        })
+        return {"response": error_msg}
 
 @router.get("/apex/chat/history")
 async def get_chat_history():
