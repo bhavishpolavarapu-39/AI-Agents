@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState, useEffect } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import PortfolioSummary from '@/components/PortfolioSummary';
 import ChatAgent from '@/components/ChatAgent';
@@ -17,7 +17,6 @@ interface Agent {
   name: string;
   description: string;
   capabilities: string[];
-  icon: string;
 }
 
 const AGENTS: Agent[] = [
@@ -26,48 +25,42 @@ const AGENTS: Agent[] = [
     name: 'Portfolio Rebalancer',
     description: 'Optimizes portfolio allocation using Modern Portfolio Theory and Sharpe ratio calculations.',
     capabilities: ['Asset Allocation', 'Rebalancing', 'Optimization', 'Risk-Return Analysis'],
-    icon: '⚖️',
   },
   {
     id: 'risk_analyzer',
     name: 'Risk Analyzer',
     description: 'Calculates Value at Risk (VaR), portfolio Greeks, Beta, and stress tests.',
     capabilities: ['VaR Calculation', 'Stress Testing', 'Greeks Analysis', 'Volatility Metrics'],
-    icon: '📊',
   },
   {
     id: 'tax_optimizer',
     name: 'Tax Optimizer',
     description: 'Identifies tax loss harvesting opportunities and optimizes tax liability.',
     capabilities: ['Tax Loss Harvesting', 'Tax Liability', 'Wash-Sale Rules', 'Tax Planning'],
-    icon: '💰',
   },
   {
     id: 'market_watcher',
     name: 'Market Watcher',
     description: 'Monitors global markets for opportunities, inverse correlations, and real-time alerts.',
     capabilities: ['Market Alerts', 'Trending Detection', 'Inverse Correlations', 'Opportunity Finder'],
-    icon: '👁️',
   },
   {
     id: 'ai_analyst',
     name: 'AI Analyst',
     description: 'Multi-agent system combining technical, fundamental, sentiment, and risk analysis.',
     capabilities: ['Technical Analysis', 'Fundamental Analysis', 'Sentiment Analysis', 'Risk Assessment'],
-    icon: '🤖',
   },
   {
     id: 'ai_advisor',
     name: 'AI Advisor',
     description: 'Conversational AI assistant providing real-time market insights and recommendations.',
     capabilities: ['Chat Interface', 'Real-time Insights', 'Recommendations', 'Strategic Guidance'],
-    icon: '💬',
   },
 ];
 
 function LoadingPlaceholder() {
   return (
-    <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/40 rounded-2xl border border-white/10 p-6 h-40 flex items-center justify-center backdrop-blur">
+    <div className="liquid-glass border border-white/20 rounded-2xl p-6 h-40 flex items-center justify-center backdrop-blur">
       <div className="text-center">
         <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto"></div>
         <p className="text-gray-300 mt-3 text-sm">Loading...</p>
@@ -76,38 +69,23 @@ function LoadingPlaceholder() {
   );
 }
 
-function TabButton({
-  label,
-  isActive,
-  onClick,
-}: {
+interface TabConfig {
+  id: 'portfolio' | 'market' | 'news' | 'search' | 'agents';
   label: string;
-  isActive: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 whitespace-nowrap ${
-        isActive
-          ? 'bg-white text-black shadow-lg'
-          : 'bg-slate-800/50 text-white hover:bg-slate-700/50 border border-white/20'
-      }`}
-    >
-      {label}
-    </button>
-  );
 }
+
+const TABS: TabConfig[] = [
+  { id: 'portfolio', label: 'Portfolio' },
+  { id: 'market', label: 'Markets' },
+  { id: 'news', label: 'News' },
+  { id: 'search', label: 'Discovery' },
+  { id: 'agents', label: 'Agents' },
+];
 
 function AgentCard({ agent }: { agent: Agent }) {
   return (
-    <div className="liquid-glass border border-white/20 rounded-xl p-5 hover:border-white/40 transition-all duration-300 hover:shadow-lg">
-      <div className="flex items-start gap-3 mb-3">
-        <div className="text-3xl">{agent.icon}</div>
-        <div className="flex-1">
-          <h3 className="font-bold text-white text-lg">{agent.name}</h3>
-        </div>
-      </div>
+    <div className="liquid-glass border border-white/20 rounded-xl p-6 hover:border-white/40 transition-all duration-300 backdrop-blur">
+      <h3 className="font-bold text-white text-lg mb-2">{agent.name}</h3>
       <p className="text-gray-300 text-sm mb-4">{agent.description}</p>
       <div className="flex flex-wrap gap-2">
         {agent.capabilities.map((cap) => (
@@ -129,76 +107,41 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Navbar */}
-      <nav className="liquid-glass fixed top-0 left-0 right-0 z-50 border-b border-white/10 px-6 md:px-12 lg:px-16 py-4 flex items-center justify-between">
-        <button
-          onClick={() => router.push('/')}
-          className="text-2xl font-semibold tracking-tight text-white hover:opacity-80 transition-opacity"
-        >
-          APEX
-        </button>
-
-        <div className="hidden md:flex gap-8">
-          {[
-            { label: 'Portfolio', value: 'portfolio' as const },
-            { label: 'Markets', value: 'market' as const },
-            { label: 'News', value: 'news' as const },
-            { label: 'Discovery', value: 'search' as const },
-            { label: 'Agents', value: 'agents' as const },
-          ].map((item) => (
+      {/* Unified Header with Navigation */}
+      <nav className="liquid-glass fixed top-0 left-0 right-0 z-50 border-b border-white/10 backdrop-blur-md">
+        <div className="px-6 md:px-12 lg:px-16 py-6">
+          {/* Top Row: Logo and Home Button */}
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl font-bold text-white">APEX</h1>
             <button
-              key={item.value}
-              onClick={() => setActiveTab(item.value)}
-              className={`text-sm transition-colors duration-200 ${
-                activeTab === item.value ? 'text-white font-medium' : 'text-gray-300 hover:text-white'
-              }`}
+              onClick={() => router.push('/')}
+              className="bg-white text-black px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
             >
-              {item.label}
+              Home
             </button>
-          ))}
-        </div>
+          </div>
 
-        <button
-          onClick={() => router.push('/')}
-          className="bg-white text-black px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
-        >
-          Home
-        </button>
+          {/* Bottom Row: Tab Navigation */}
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? 'bg-white text-black shadow-lg'
+                    : 'bg-white/10 text-white hover:bg-white/20 border border-white/20'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </nav>
 
-      {/* Tab Navigation */}
-      <div className="liquid-glass border-b border-white/10 sticky top-16 z-40 px-6 md:px-12 lg:px-16 py-4">
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          <TabButton
-            label="📊 Portfolio"
-            isActive={activeTab === 'portfolio'}
-            onClick={() => setActiveTab('portfolio')}
-          />
-          <TabButton
-            label="🌍 Markets"
-            isActive={activeTab === 'market'}
-            onClick={() => setActiveTab('market')}
-          />
-          <TabButton
-            label="📰 News"
-            isActive={activeTab === 'news'}
-            onClick={() => setActiveTab('news')}
-          />
-          <TabButton
-            label="🔍 Discovery"
-            isActive={activeTab === 'search'}
-            onClick={() => setActiveTab('search')}
-          />
-          <TabButton
-            label="🤖 Agents"
-            isActive={activeTab === 'agents'}
-            onClick={() => setActiveTab('agents')}
-          />
-        </div>
-      </div>
-
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 py-8">
+      <div className="pt-32 px-6 md:px-12 lg:px-16 pb-12 max-w-7xl mx-auto w-full">
         {/* Portfolio Tab */}
         {activeTab === 'portfolio' && (
           <div className="space-y-6 animate-fadeIn">
@@ -211,19 +154,20 @@ export default function Dashboard() {
 
               <div className="col-span-12 lg:col-span-4">
                 <div className="liquid-glass border border-white/20 rounded-xl p-6 backdrop-blur h-full">
-                  <h2 className="text-lg font-bold text-white mb-4">Quick Stats</h2>
+                  <h2 className="text-lg font-bold text-white mb-6">Quick Stats</h2>
                   <div className="space-y-4">
-                    <div className="bg-white/5 p-4 rounded-lg border border-white/10">
-                      <div className="text-xs text-gray-400 mb-1">Total Holdings</div>
-                      <div className="text-3xl font-bold text-white">12</div>
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                      <div className="text-xs text-gray-400 mb-2">Total Holdings</div>
+                      <div className="text-4xl font-bold text-white">12</div>
                     </div>
-                    <div className="bg-white/5 p-4 rounded-lg border border-white/10">
-                      <div className="text-xs text-gray-400 mb-1">YTD Return</div>
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                      <div className="text-xs text-gray-400 mb-2">YTD Return</div>
                       <div className="text-3xl font-bold text-green-400">+18.5%</div>
                     </div>
-                    <div className="bg-white/5 p-4 rounded-lg border border-white/10">
-                      <div className="text-xs text-gray-400 mb-1">Diversification</div>
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                      <div className="text-xs text-gray-400 mb-2">Diversification</div>
                       <div className="text-lg font-bold text-white">High</div>
+                      <div className="text-xs text-gray-500 mt-2">Well diversified across sectors</div>
                     </div>
                   </div>
                 </div>
@@ -232,9 +176,18 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Market Tab */}
+        {/* Markets Tab */}
         {activeTab === 'market' && (
           <div className="space-y-6 animate-fadeIn">
+            {/* Market Selector */}
+            <div className="liquid-glass border border-white/20 rounded-xl p-6 backdrop-blur">
+              <h2 className="text-lg font-bold text-white mb-4">Select Market</h2>
+              <Suspense fallback={<LoadingPlaceholder />}>
+                <MarketFilterBar />
+              </Suspense>
+            </div>
+
+            {/* Global Market Dashboard */}
             <div className="grid grid-cols-12 gap-6">
               <div className="col-span-12">
                 <Suspense fallback={<LoadingPlaceholder />}>
@@ -243,6 +196,7 @@ export default function Dashboard() {
               </div>
             </div>
 
+            {/* Correlation Analysis */}
             <div className="grid grid-cols-12 gap-6">
               <div className="col-span-12 lg:col-span-6">
                 <Suspense fallback={<LoadingPlaceholder />}>
@@ -261,25 +215,34 @@ export default function Dashboard() {
         {/* News Tab */}
         {activeTab === 'news' && (
           <div className="animate-fadeIn">
-            <Suspense fallback={<LoadingPlaceholder />}>
-              <NewsSection />
-            </Suspense>
+            <div className="liquid-glass border border-white/20 rounded-xl p-6 backdrop-blur">
+              <h2 className="text-lg font-bold text-white mb-6">Market News & Sentiment Analysis</h2>
+              <Suspense fallback={<LoadingPlaceholder />}>
+                <NewsSection />
+              </Suspense>
+            </div>
           </div>
         )}
 
-        {/* Discovery Tab */}
+        {/* Stock Discovery Tab */}
         {activeTab === 'search' && (
           <div className="space-y-6 animate-fadeIn">
             <div className="grid grid-cols-12 gap-6">
               <div className="col-span-12 lg:col-span-8">
-                <Suspense fallback={<LoadingPlaceholder />}>
-                  <StockSearch />
-                </Suspense>
+                <div className="liquid-glass border border-white/20 rounded-xl p-6 backdrop-blur">
+                  <h2 className="text-lg font-bold text-white mb-4">Stock & Crypto Search</h2>
+                  <Suspense fallback={<LoadingPlaceholder />}>
+                    <StockSearch />
+                  </Suspense>
+                </div>
               </div>
               <div className="col-span-12 lg:col-span-4">
-                <Suspense fallback={<LoadingPlaceholder />}>
-                  <MarketFilterBar />
-                </Suspense>
+                <div className="liquid-glass border border-white/20 rounded-xl p-6 backdrop-blur h-full">
+                  <h2 className="text-lg font-bold text-white mb-4">Market Filter</h2>
+                  <Suspense fallback={<LoadingPlaceholder />}>
+                    <MarketFilterBar />
+                  </Suspense>
+                </div>
               </div>
             </div>
           </div>
@@ -288,23 +251,26 @@ export default function Dashboard() {
         {/* Agents Tab */}
         {activeTab === 'agents' && (
           <div className="space-y-8 animate-fadeIn">
-            <div>
-              <h2 className="text-3xl font-bold text-white mb-2">AI Agents & Tools</h2>
+            {/* Agents Overview */}
+            <div className="liquid-glass border border-white/20 rounded-xl p-8 backdrop-blur">
+              <h2 className="text-3xl font-bold text-white mb-3">AI Agents & Tools</h2>
               <p className="text-gray-400">
                 APEX uses a multi-agent AI system to provide comprehensive portfolio analysis. Each agent specializes in different aspects of investment intelligence.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Agent Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {AGENTS.map((agent) => (
                 <AgentCard key={agent.id} agent={agent} />
               ))}
             </div>
 
-            <div className="grid grid-cols-12 gap-6 mt-8">
+            {/* Chat and Plugin Manager */}
+            <div className="grid grid-cols-12 gap-6">
               <div className="col-span-12 lg:col-span-8">
                 <div className="liquid-glass border border-white/20 rounded-xl p-6 backdrop-blur">
-                  <h3 className="text-lg font-bold text-white mb-4">💬 Chat with AI Advisor</h3>
+                  <h3 className="text-lg font-bold text-white mb-4">Chat with AI Advisor</h3>
                   <Suspense fallback={<LoadingPlaceholder />}>
                     <ChatAgent />
                   </Suspense>
@@ -313,7 +279,7 @@ export default function Dashboard() {
 
               <div className="col-span-12 lg:col-span-4">
                 <div className="liquid-glass border border-white/20 rounded-xl p-6 backdrop-blur h-full">
-                  <h3 className="text-lg font-bold text-white mb-4">⚙️ Execute Agents</h3>
+                  <h3 className="text-lg font-bold text-white mb-4">Execute Agents</h3>
                   <Suspense fallback={<LoadingPlaceholder />}>
                     <PluginManager />
                   </Suspense>
