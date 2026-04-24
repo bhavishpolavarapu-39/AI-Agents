@@ -1,331 +1,111 @@
 'use client';
 
-import { Suspense, useState } from 'react';
-import PortfolioSummary from '@/components/PortfolioSummary';
-import ChatAgent from '@/components/ChatAgent';
-import PluginManager from '@/components/PluginManager';
-import StockSearch from '@/components/search/StockSearch';
-import MarketFilterBar from '@/components/search/MarketFilterBar';
-import NewsSection from '@/components/news/NewsSection';
-import CorrelationMatrix from '@/components/analysis/CorrelationMatrix';
-import MarketImpactAnalyzer from '@/components/analysis/MarketImpactAnalyzer';
-import GlobalMarketDashboard from '@/components/analysis/GlobalMarketDashboard';
+import React from 'react';
+import AnimatedHeading from '@/components/AnimatedHeading';
+import FadeIn from '@/components/FadeIn';
 
-interface Agent {
-  id: string;
-  name: string;
-  description: string;
-  capabilities: string[];
-  icon: string;
-}
-
-const AGENTS: Agent[] = [
-  {
-    id: 'portfolio_rebalancer',
-    name: 'Portfolio Rebalancer',
-    description: 'Optimizes portfolio allocation using Modern Portfolio Theory and Sharpe ratio calculations to maximize risk-adjusted returns.',
-    capabilities: ['Asset Allocation', 'Rebalancing', 'Optimization', 'Risk-Return Analysis'],
-    icon: '⚖️',
-  },
-  {
-    id: 'risk_analyzer',
-    name: 'Risk Analyzer',
-    description: 'Calculates Value at Risk (VaR), portfolio Greeks, Beta, and stress tests against market scenarios.',
-    capabilities: ['VaR Calculation', 'Stress Testing', 'Greeks Analysis', 'Volatility Metrics'],
-    icon: '📊',
-  },
-  {
-    id: 'tax_optimizer',
-    name: 'Tax Optimizer',
-    description: 'Identifies tax loss harvesting opportunities and optimizes tax liability by jurisdiction.',
-    capabilities: ['Tax Loss Harvesting', 'Tax Liability', 'Wash-Sale Rules', 'Tax Planning'],
-    icon: '💰',
-  },
-  {
-    id: 'market_watcher',
-    name: 'Market Watcher',
-    description: 'Monitors global markets for opportunities, inverse correlations, and real-time alerts on holdings.',
-    capabilities: ['Market Alerts', 'Trending Detection', 'Inverse Correlations', 'Opportunity Finder'],
-    icon: '👁️',
-  },
-  {
-    id: 'ai_analyst',
-    name: 'AI Analyst',
-    description: 'Multi-agent system combining technical, fundamental, sentiment, and risk analysis for comprehensive investment thesis.',
-    capabilities: ['Technical Analysis', 'Fundamental Analysis', 'Sentiment Analysis', 'Risk Assessment'],
-    icon: '🤖',
-  },
-  {
-    id: 'ai_advisor',
-    name: 'AI Advisor',
-    description: 'Conversational AI assistant providing real-time market insights, portfolio recommendations, and strategic guidance.',
-    capabilities: ['Chat Interface', 'Real-time Insights', 'Recommendations', 'Strategic Guidance'],
-    icon: '💬',
-  },
-];
-
-function LoadingPlaceholder() {
-  return (
-    <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/40 rounded-2xl border border-indigo-900/20 p-6 h-40 flex items-center justify-center">
-      <div className="text-center">
-        <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin mx-auto"></div>
-        <p className="text-slate-400 mt-3 text-sm">Loading...</p>
-      </div>
-    </div>
-  );
-}
-
-function TabButton({
-  label,
-  isActive,
-  onClick
-}: {
-  label: string;
-  isActive: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 whitespace-nowrap ${
-        isActive
-          ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg shadow-indigo-500/50'
-          : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50 border border-slate-700'
-      }`}
-    >
-      {label}
-    </button>
-  );
-}
-
-function AgentCard({ agent }: { agent: Agent }) {
-  return (
-    <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl border border-indigo-900/30 p-5 hover:border-indigo-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/20">
-      <div className="flex items-start gap-3 mb-3">
-        <div className="text-3xl">{agent.icon}</div>
-        <div className="flex-1">
-          <h3 className="font-bold text-indigo-300 text-lg">{agent.name}</h3>
-        </div>
-      </div>
-      <p className="text-slate-300 text-sm mb-4">{agent.description}</p>
-      <div className="flex flex-wrap gap-2">
-        {agent.capabilities.map((cap) => (
-          <span
-            key={cap}
-            className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs border border-indigo-500/30"
-          >
-            {cap}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
+const VIDEO_URL = 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260403_050628_c4e32401-fab4-4a27-b7a8-6e9291cd5959.mp4';
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'portfolio' | 'market' | 'news' | 'search' | 'agents'>('portfolio');
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
-      <style>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .fade-in {
-          animation: fadeIn 0.3s ease-out;
-        }
-      `}</style>
+    <div className="relative w-full h-screen overflow-hidden bg-black">
+      {/* Video Background - Raw, no overlay */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+      >
+        <source src={VIDEO_URL} type="video/mp4" />
+      </video>
 
-      <header className="border-b border-indigo-900/30 bg-gradient-to-b from-slate-900/80 to-slate-900/40 backdrop-blur-md sticky top-0 z-20">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-black bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                APEX Intelligence
-              </h1>
-              <p className="text-sm text-slate-400 mt-1">World-Class Portfolio Intelligence Operating System</p>
-            </div>
-            <div className="flex gap-4 items-center">
-              <div className="text-right">
-                <div className="text-sm font-semibold text-indigo-400">System Status</div>
-                <div className="text-xs text-slate-500">AI Agents Active</div>
-              </div>
-              <div className="w-3 h-3 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full animate-pulse shadow-lg shadow-indigo-500/50"></div>
-            </div>
-          </div>
+      {/* Navbar */}
+      <nav className="liquid-glass fixed top-0 left-0 right-0 z-50 mx-6 md:mx-12 lg:mx-16 mt-6 rounded-xl px-4 py-2 flex items-center justify-between">
+        {/* Logo */}
+        <div className="text-2xl font-semibold tracking-tight text-white">APEX</div>
+
+        {/* Center Links - Hidden on mobile */}
+        <div className="hidden md:flex gap-8">
+          {['Story', 'Investing', 'Building', 'Advisory'].map((link) => (
+            <a
+              key={link}
+              href="#"
+              className="text-sm text-white hover:text-gray-300 transition-colors duration-200"
+            >
+              {link}
+            </a>
+          ))}
         </div>
-      </header>
 
-      <div className="border-b border-indigo-900/20 bg-slate-900/30 backdrop-blur-sm sticky top-[88px] z-10">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            <TabButton
-              label="📊 Portfolio Overview"
-              isActive={activeTab === 'portfolio'}
-              onClick={() => setActiveTab('portfolio')}
+        {/* Right Button */}
+        <button className="bg-white text-black px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors duration-200">
+          Start a Chat
+        </button>
+      </nav>
+
+      {/* Hero Content */}
+      <div className="relative z-10 w-full h-full px-6 md:px-12 lg:px-16 flex flex-col justify-end pb-12 lg:pb-16">
+        <div className="lg:grid lg:grid-cols-2 lg:items-end gap-12">
+          {/* Left Column - Main Content */}
+          <div>
+            {/* Animated Heading */}
+            <AnimatedHeading
+              text="Shaping tomorrow\nwith vision and action."
+              className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-normal mb-4 text-white leading-tight"
+              initialDelay={200}
+              charDelay={30}
+              transitionDuration={500}
+              style={{ letterSpacing: '-0.04em' }}
             />
-            <TabButton
-              label="🌍 Market Analysis"
-              isActive={activeTab === 'market'}
-              onClick={() => setActiveTab('market')}
-            />
-            <TabButton
-              label="📰 News & Sentiment"
-              isActive={activeTab === 'news'}
-              onClick={() => setActiveTab('news')}
-            />
-            <TabButton
-              label="🔍 Stock Discovery"
-              isActive={activeTab === 'search'}
-              onClick={() => setActiveTab('search')}
-            />
-            <TabButton
-              label="🤖 Agents & Tools"
-              isActive={activeTab === 'agents'}
-              onClick={() => setActiveTab('agents')}
-            />
+
+            {/* Subheading */}
+            <FadeIn delay={800} duration={1000}>
+              <p className="text-base md:text-lg text-gray-300 mb-5 max-w-lg">
+                We back visionaries and craft ventures that define what comes next.
+              </p>
+            </FadeIn>
+
+            {/* Buttons */}
+            <FadeIn delay={1200} duration={1000}>
+              <div className="flex flex-wrap gap-4">
+                <button className="bg-white text-black px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors duration-200">
+                  Start a Chat
+                </button>
+                <button className="liquid-glass border border-white/20 text-white px-8 py-3 rounded-lg font-medium hover:bg-white hover:text-black transition-all duration-200">
+                  Explore Now
+                </button>
+              </div>
+            </FadeIn>
           </div>
-        </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {activeTab === 'portfolio' && (
-          <div className="space-y-6 fade-in">
-            <div className="grid grid-cols-12 gap-6">
-              <div className="col-span-12 lg:col-span-8">
-                <Suspense fallback={<LoadingPlaceholder />}>
-                  <PortfolioSummary />
-                </Suspense>
-              </div>
-
-              <div className="col-span-12 lg:col-span-4">
-                <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl border border-indigo-900/30 p-6 backdrop-blur">
-                  <h2 className="text-lg font-bold bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-transparent mb-4">
-                    Quick Stats
-                  </h2>
-                  <div className="space-y-4">
-                    <div className="bg-slate-900/50 p-4 rounded-lg border border-indigo-900/20">
-                      <div className="text-xs text-slate-400 mb-1">Total Holdings</div>
-                      <div className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">12</div>
-                    </div>
-                    <div className="bg-slate-900/50 p-4 rounded-lg border border-indigo-900/20">
-                      <div className="text-xs text-slate-400 mb-1">Year-to-Date Return</div>
-                      <div className="text-3xl font-bold text-green-400">+18.5%</div>
-                    </div>
-                    <div className="bg-slate-900/50 p-4 rounded-lg border border-indigo-900/20">
-                      <div className="text-xs text-slate-400 mb-1">Diversification</div>
-                      <div className="text-lg font-bold text-indigo-400">High</div>
-                      <div className="text-xs text-slate-500 mt-1">Well diversified across sectors</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'market' && (
-          <div className="space-y-6 fade-in">
-            <div className="grid grid-cols-12 gap-6">
-              <div className="col-span-12">
-                <Suspense fallback={<LoadingPlaceholder />}>
-                  <GlobalMarketDashboard />
-                </Suspense>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-12 gap-6">
-              <div className="col-span-12 lg:col-span-6">
-                <Suspense fallback={<LoadingPlaceholder />}>
-                  <CorrelationMatrix />
-                </Suspense>
-              </div>
-              <div className="col-span-12 lg:col-span-6">
-                <Suspense fallback={<LoadingPlaceholder />}>
-                  <MarketImpactAnalyzer />
-                </Suspense>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'news' && (
-          <div className="fade-in">
-            <Suspense fallback={<LoadingPlaceholder />}>
-              <NewsSection />
-            </Suspense>
-          </div>
-        )}
-
-        {activeTab === 'search' && (
-          <div className="space-y-6 fade-in">
-            <div className="grid grid-cols-12 gap-6">
-              <div className="col-span-12 lg:col-span-8">
-                <Suspense fallback={<LoadingPlaceholder />}>
-                  <StockSearch />
-                </Suspense>
-              </div>
-              <div className="col-span-12 lg:col-span-4">
-                <Suspense fallback={<LoadingPlaceholder />}>
-                  <MarketFilterBar />
-                </Suspense>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'agents' && (
-          <div className="space-y-8 fade-in">
-            <div>
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 bg-clip-text text-transparent mb-2">
-                AI Agents & Tools
-              </h2>
-              <p className="text-slate-400">
-                APEX uses a multi-agent AI system to provide comprehensive portfolio analysis. Each agent specializes in different aspects of investment intelligence.
+          {/* Right Column - Tag */}
+          <FadeIn delay={1400} duration={1000} className="lg:flex lg:items-end lg:justify-end">
+            <div className="liquid-glass border border-white/20 px-6 py-3 rounded-xl mt-8 lg:mt-0 w-fit">
+              <p className="text-lg md:text-xl lg:text-2xl font-light text-white">
+                Investing. Building. Advisory.
               </p>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {AGENTS.map((agent) => (
-                <AgentCard key={agent.id} agent={agent} />
-              ))}
-            </div>
-
-            <div className="grid grid-cols-12 gap-6 mt-8">
-              <div className="col-span-12 lg:col-span-8">
-                <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl border border-indigo-900/30 p-6 backdrop-blur">
-                  <h3 className="text-lg font-bold text-indigo-300 mb-4">💬 Chat with AI Advisor</h3>
-                  <Suspense fallback={<LoadingPlaceholder />}>
-                    <ChatAgent />
-                  </Suspense>
-                </div>
-              </div>
-
-              <div className="col-span-12 lg:col-span-4">
-                <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl border border-indigo-900/30 p-6 backdrop-blur h-full">
-                  <h3 className="text-lg font-bold text-indigo-300 mb-4">⚙️ Execute Agents</h3>
-                  <Suspense fallback={<LoadingPlaceholder />}>
-                    <PluginManager />
-                  </Suspense>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+          </FadeIn>
+        </div>
       </div>
 
-      <footer className="border-t border-indigo-900/20 bg-slate-900/30 backdrop-blur-sm mt-12 py-6">
-        <div className="max-w-7xl mx-auto px-6 text-center text-slate-500 text-sm">
-          <p>APEX Intelligence Platform © 2024 • Powered by Advanced AI Agents</p>
-        </div>
-      </footer>
+      {/* Scroll Indicator */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 animate-bounce">
+        <svg
+          className="w-6 h-6 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 14l-7 7m0 0l-7-7m7 7V3"
+          />
+        </svg>
+      </div>
     </div>
   );
 }
