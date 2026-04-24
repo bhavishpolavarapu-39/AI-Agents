@@ -1,9 +1,9 @@
-import type { Metadata } from 'next';
 import './globals.css';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'SENTINEL - Infrastructure Intelligence OS',
-  description: 'Incident detection, root cause analysis, and automated remediation',
+  title: 'Operating System',
+  description: 'AI-powered operating system',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
