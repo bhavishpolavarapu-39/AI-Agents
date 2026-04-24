@@ -8,7 +8,20 @@ app = FastAPI(
     description="Production-grade apex AI operating system"
 )
 
-app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:3000"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:8000",
+        "https://ai-agents-kvjx.vercel.app",
+        "https://*.vercel.app",
+        "*"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(routes.router)
 
 @app.get("/health")
