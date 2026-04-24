@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import PortfolioSummary from '@/components/PortfolioSummary';
 import ChatAgent from '@/components/ChatAgent';
 import PluginManager from '@/components/PluginManager';
@@ -125,15 +125,7 @@ function AgentCard({ agent }: { agent: Agent }) {
 
 export default function Dashboard() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<'portfolio' | 'market' | 'news' | 'search' | 'agents'>('portfolio');
-
-  useEffect(() => {
-    const tab = searchParams.get('tab') as typeof activeTab;
-    if (tab && ['portfolio', 'market', 'news', 'search', 'agents'].includes(tab)) {
-      setActiveTab(tab);
-    }
-  }, [searchParams]);
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -148,17 +140,17 @@ export default function Dashboard() {
 
         <div className="hidden md:flex gap-8">
           {[
-            { label: 'Portfolio', tab: 'portfolio' },
-            { label: 'Markets', tab: 'market' },
-            { label: 'News', tab: 'news' },
-            { label: 'Discovery', tab: 'search' },
-            { label: 'Agents', tab: 'agents' },
+            { label: 'Portfolio', value: 'portfolio' as const },
+            { label: 'Markets', value: 'market' as const },
+            { label: 'News', value: 'news' as const },
+            { label: 'Discovery', value: 'search' as const },
+            { label: 'Agents', value: 'agents' as const },
           ].map((item) => (
             <button
-              key={item.tab}
-              onClick={() => setActiveTab(item.tab as typeof activeTab)}
+              key={item.value}
+              onClick={() => setActiveTab(item.value)}
               className={`text-sm transition-colors duration-200 ${
-                activeTab === item.tab ? 'text-white font-medium' : 'text-gray-300 hover:text-white'
+                activeTab === item.value ? 'text-white font-medium' : 'text-gray-300 hover:text-white'
               }`}
             >
               {item.label}

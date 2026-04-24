@@ -15,7 +15,7 @@ export default function Home() {
   };
 
   const handleExplore = () => {
-    router.push('/dashboard?tab=market');
+    router.push('/dashboard');
   };
 
   return (
@@ -44,14 +44,14 @@ export default function Home() {
         {/* Center Links - Hidden on mobile */}
         <div className="hidden md:flex gap-8">
           {[
-            { label: 'Portfolio', href: '/dashboard' },
-            { label: 'Markets', href: '/dashboard?tab=market' },
-            { label: 'News', href: '/dashboard?tab=news' },
-            { label: 'Agents', href: '/dashboard?tab=agents' },
+            { label: 'Portfolio', onClick: () => router.push('/dashboard') },
+            { label: 'Markets', onClick: () => router.push('/dashboard') },
+            { label: 'News', onClick: () => router.push('/dashboard') },
+            { label: 'Agents', onClick: () => router.push('/dashboard') },
           ].map((link) => (
             <button
               key={link.label}
-              onClick={() => router.push(link.href)}
+              onClick={link.onClick}
               className="text-sm text-white hover:text-gray-300 transition-colors duration-200"
             >
               {link.label}
