@@ -6,7 +6,6 @@ import {
   Line,
   AreaChart,
   Area,
-  CandlestickChart,
   BarChart,
   Bar,
   XAxis,
@@ -31,7 +30,7 @@ interface PriceData {
 }
 
 type TimeFrame = '1D' | '1W' | '1M' | '3M' | '1Y' | 'ALL';
-type ChartType = 'line' | 'area' | 'candlestick' | 'ohlc';
+type ChartType = 'line' | 'area' | 'ohlc';
 
 // Mock data generator
 const generateMockData = (days: number): PriceData[] => {
@@ -101,7 +100,7 @@ export default function StockPriceChart({ symbol = 'AAPL' }: { symbol?: string }
       return (
         <div className="bg-slate-900/95 border border-white/20 rounded-lg p-3 backdrop-blur">
           <p className="text-white font-semibold">{data.date}</p>
-          {chartType === 'candlestick' && (
+          {chartType === 'ohlc' && (
             <>
               <p className="text-xs text-gray-400">Open: ${data.open.toFixed(2)}</p>
               <p className="text-xs text-gray-400">High: ${data.high.toFixed(2)}</p>
@@ -109,7 +108,7 @@ export default function StockPriceChart({ symbol = 'AAPL' }: { symbol?: string }
               <p className="text-xs text-gray-400">Close: ${data.close.toFixed(2)}</p>
             </>
           )}
-          {chartType !== 'candlestick' && (
+          {chartType !== 'ohlc' && (
             <p className={`text-sm font-semibold ${data.price >= previousPrice ? 'text-green-400' : 'text-red-400'}`}>
               ${data.price.toFixed(2)}
             </p>
@@ -165,7 +164,7 @@ export default function StockPriceChart({ symbol = 'AAPL' }: { symbol?: string }
           <div>
             <label className="text-xs font-semibold text-gray-400 mb-2 block">Chart Type</label>
             <div className="flex gap-2 flex-wrap">
-              {(['line', 'area', 'candlestick', 'ohlc'] as ChartType[]).map((ct) => (
+              {(['line', 'area', 'ohlc'] as ChartType[]).map((ct) => (
                 <button
                   key={ct}
                   onClick={() => setChartType(ct)}
@@ -207,8 +206,8 @@ export default function StockPriceChart({ symbol = 'AAPL' }: { symbol?: string }
 
       {/* Chart */}
       <div className="w-full h-96">
-        <ResponsiveContainer width="100%" height="100%">
-          {chartType === 'line' && (
+        {chartType === 'line' && (
+          <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
               <XAxis dataKey="date" stroke="rgba(255,255,255,0.5)" style={{ fontSize: '12px' }} />
@@ -226,9 +225,11 @@ export default function StockPriceChart({ symbol = 'AAPL' }: { symbol?: string }
               {showSMA && <Line type="monotone" dataKey="sma20" stroke="#fbbf24" strokeWidth={1.5} name="SMA 20" />}
               {showSMA && <Line type="monotone" dataKey="sma50" stroke="#f87171" strokeWidth={1.5} name="SMA 50" />}
             </LineChart>
-          )}
+          </ResponsiveContainer>
+        )}
 
-          {chartType === 'area' && (
+        {chartType === 'area' && (
+          <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
               <defs>
                 <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
@@ -249,9 +250,11 @@ export default function StockPriceChart({ symbol = 'AAPL' }: { symbol?: string }
                 name={`${symbol} Price`}
               />
             </AreaChart>
-          )}
+          </ResponsiveContainer>
+        )}
 
-          {(chartType === 'candlestick' || chartType === 'ohlc') && (
+        {chartType === 'ohlc' && (
+          <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
               <XAxis dataKey="date" stroke="rgba(255,255,255,0.5)" style={{ fontSize: '12px' }} />
@@ -260,21 +263,12 @@ export default function StockPriceChart({ symbol = 'AAPL' }: { symbol?: string }
               <Bar
                 dataKey="close"
                 fill="#3b82f6"
-                shape={
-                  <rect
-                    x={0}
-                    y={0}
-                    width={0}
-                    height={0}
-                    fill="rgba(59, 130, 246, 0.6)"
-                    stroke={({ payload }: any) => (payload.close >= payload.open ? '#10b981' : '#ef4444')}
-                  />
-                }
-                name="Price"
+                radius={[4, 4, 0, 0]}
+                name="Close Price"
               />
             </BarChart>
-          )}
-        </ResponsiveContainer>
+          </ResponsiveContainer>
+        )}
       </div>
 
       {/* Volume Chart */}
