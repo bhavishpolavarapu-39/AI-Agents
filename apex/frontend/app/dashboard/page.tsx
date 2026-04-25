@@ -11,6 +11,10 @@ import NewsSection from '@/components/news/NewsSection';
 import CorrelationMatrix from '@/components/analysis/CorrelationMatrix';
 import MarketImpactAnalyzer from '@/components/analysis/MarketImpactAnalyzer';
 import GlobalMarketDashboard from '@/components/analysis/GlobalMarketDashboard';
+import StockPriceChart from '@/components/charts/StockPriceChart';
+import PortfolioAllocationChart from '@/components/charts/PortfolioAllocationChart';
+import MarketHeatmap from '@/components/charts/MarketHeatmap';
+import TechnicalIndicators from '@/components/charts/TechnicalIndicators';
 
 interface Agent {
   id: string;
@@ -155,31 +159,24 @@ export default function Dashboard() {
         {activeTab === 'portfolio' && (
           <div className="space-y-6 animate-fadeIn">
             <div className="grid grid-cols-12 gap-6">
+              <div className="col-span-12">
+                <Suspense fallback={<LoadingPlaceholder />}>
+                  <PortfolioAllocationChart />
+                </Suspense>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-12 gap-6">
               <div className="col-span-12 lg:col-span-8">
                 <Suspense fallback={<LoadingPlaceholder />}>
-                  <PortfolioSummary />
+                  <StockPriceChart symbol="AAPL" />
                 </Suspense>
               </div>
 
               <div className="col-span-12 lg:col-span-4">
-                <div className="liquid-glass border border-white/20 rounded-xl p-6 backdrop-blur h-full">
-                  <h2 className="text-lg font-bold text-white mb-6">Quick Stats</h2>
-                  <div className="space-y-4">
-                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                      <div className="text-xs text-gray-400 mb-2">Total Holdings</div>
-                      <div className="text-4xl font-bold text-white">12</div>
-                    </div>
-                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                      <div className="text-xs text-gray-400 mb-2">YTD Return</div>
-                      <div className="text-3xl font-bold text-green-400">+18.5%</div>
-                    </div>
-                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                      <div className="text-xs text-gray-400 mb-2">Diversification</div>
-                      <div className="text-lg font-bold text-white">High</div>
-                      <div className="text-xs text-gray-500 mt-2">Well diversified across sectors</div>
-                    </div>
-                  </div>
-                </div>
+                <Suspense fallback={<LoadingPlaceholder />}>
+                  <TechnicalIndicators symbol="AAPL" />
+                </Suspense>
               </div>
             </div>
           </div>
@@ -188,6 +185,15 @@ export default function Dashboard() {
         {/* Markets Tab */}
         {activeTab === 'market' && (
           <div className="space-y-6 animate-fadeIn">
+            {/* Market Heatmap */}
+            <div className="grid grid-cols-12 gap-6">
+              <div className="col-span-12">
+                <Suspense fallback={<LoadingPlaceholder />}>
+                  <MarketHeatmap />
+                </Suspense>
+              </div>
+            </div>
+
             {/* Market Selector */}
             <div className="liquid-glass border border-white/20 rounded-xl p-6 backdrop-blur">
               <h2 className="text-lg font-bold text-white mb-4">Select Market</h2>
@@ -238,18 +244,26 @@ export default function Dashboard() {
           <div className="space-y-6 animate-fadeIn">
             <div className="grid grid-cols-12 gap-6">
               <div className="col-span-12 lg:col-span-8">
-                <div className="liquid-glass border border-white/20 rounded-xl p-6 backdrop-blur">
-                  <h2 className="text-lg font-bold text-white mb-4">Stock & Crypto Search</h2>
-                  <Suspense fallback={<LoadingPlaceholder />}>
-                    <StockSearch />
-                  </Suspense>
-                </div>
+                <Suspense fallback={<LoadingPlaceholder />}>
+                  <StockPriceChart symbol="MSFT" />
+                </Suspense>
               </div>
               <div className="col-span-12 lg:col-span-4">
                 <div className="liquid-glass border border-white/20 rounded-xl p-6 backdrop-blur h-full">
                   <h2 className="text-lg font-bold text-white mb-4">Market Filter</h2>
                   <Suspense fallback={<LoadingPlaceholder />}>
                     <MarketFilterBar />
+                  </Suspense>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-12 gap-6">
+              <div className="col-span-12">
+                <div className="liquid-glass border border-white/20 rounded-xl p-6 backdrop-blur">
+                  <h2 className="text-lg font-bold text-white mb-4">Stock & Crypto Search</h2>
+                  <Suspense fallback={<LoadingPlaceholder />}>
+                    <StockSearch />
                   </Suspense>
                 </div>
               </div>
