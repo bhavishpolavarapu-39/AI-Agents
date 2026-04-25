@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   LineChart,
   Line,
@@ -16,6 +16,8 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { motion } from 'framer-motion';
+import TechnicalIndicatorSelector from './TechnicalIndicatorSelector';
+import { apiClient } from '@/services/api';
 
 interface PriceData {
   date: string;
@@ -84,9 +86,46 @@ export default function StockPriceChart({ symbol = 'AAPL' }: { symbol?: string }
   const [chartType, setChartType] = useState<ChartType>('line');
   const [showSMA, setShowSMA] = useState(true);
   const [showVolume, setShowVolume] = useState(true);
+  const [selectedIndicators, setSelectedIndicators] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [realData, setRealData] = useState<PriceData[]>([]);
+  const [useRealData, setUseRealData] = useState(true);
 
   const days = TIMEFRAME_DAYS[timeFrame];
-  const data = generateMockData(days);
+
+  // Fetch real data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await apiClient.getStockChart(symbol, timeFrame.toLowerCase());
+        if (response.success && response.data) {
+          // Transform API response to chart format
+          const chartData = response.data.c?.map((close: number, index: number) => ({
+            date: new Date(response.data.t[index] * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+            price: close,
+            high: response.data.h?.[index] || close,
+            low: response.data.l?.[index] || close,
+            open: response.data.o?.[index] || close,
+            close: close,
+            volume: response.data.v?.[index] || 0,
+            sma20: index >= 19 ? response.data.c?.slice(Math.max(0, index - 19), index + 1).reduce((a: number, b: number) => a + b, 0) / 20 : NaN,
+            sma50: index >= 49 ? response.data.c?.slice(Math.max(0, index - 49), index + 1).reduce((a: number, b: number) => a + b, 0) / 50 : NaN,
+          })) || [];
+          setRealData(chartData);
+        }
+      } catch (error) {
+        console.error('Failed to fetch real data:', error);
+        setUseRealData(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [symbol, timeFrame]);
+
+  const data = useRealData && realData.length > 0 ? realData : generateMockData(days);
 
   const minPrice = Math.min(...data.map(d => d.low)) - 5;
   const maxPrice = Math.max(...data.map(d => d.high)) + 5;
@@ -130,18 +169,31 @@ export default function StockPriceChart({ symbol = 'AAPL' }: { symbol?: string }
       <div className="mb-6">
         <div className="flex justify-between items-start mb-4">
           <div>
-            <h3 className="text-2xl font-bold text-white">{symbol}</h3>
+            <div className="flex items-center gap-2 mb-2">
+              <h3 className="text-2xl font-bold text-white">{symbol}</h3>
+              <div className={`px-2 py-1 rounded text-xs font-bold ${
+                realData.length > 0 && useRealData
+                  ? 'bg-green-500/20 text-green-400'
+                  : 'bg-yellow-500/20 text-yellow-400'
+              }`}>
+                {realData.length > 0 && useRealData ? '🔴 Live' : '📊 Demo'}
+              </div>
+            </div>
             <p className="text-3xl font-bold text-white mt-2">${currentPrice.toFixed(2)}</p>
             <p className={`text-sm mt-1 ${changePercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
               {changePercent >= 0 ? '+' : ''}{changePercent.toFixed(2)}% {timeFrame}
             </p>
+            {loading && <p className="text-xs text-blue-400 mt-1">Fetching real data...</p>}
           </div>
         </div>
 
         {/* Controls */}
         <div className="space-y-4">
-          {/* Timeframe Selector */}
-          <div>
+          {/* Top Controls Row */}
+          <div className="flex justify-between items-center gap-4">
+            <div className="flex gap-2">
+              {/* Timeframe Selector */}
+              <div>
             <label className="text-xs font-semibold text-gray-400 mb-2 block">Timeframe</label>
             <div className="flex gap-2 flex-wrap">
               {(['1D', '1W', '1M', '3M', '1Y', 'ALL'] as TimeFrame[]).map((tf) => (
@@ -178,6 +230,11 @@ export default function StockPriceChart({ symbol = 'AAPL' }: { symbol?: string }
                 </button>
               ))}
             </div>
+          </div>
+            </div>
+
+            {/* Technical Indicator Selector */}
+            <TechnicalIndicatorSelector onIndicatorsChange={setSelectedIndicators} />
           </div>
 
           {/* Indicators Toggle */}
