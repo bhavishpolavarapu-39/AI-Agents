@@ -15,6 +15,15 @@ import StockPriceChart from '@/components/charts/StockPriceChart';
 import PortfolioAllocationChart from '@/components/charts/PortfolioAllocationChart';
 import MarketHeatmap from '@/components/charts/MarketHeatmap';
 import TechnicalIndicators from '@/components/charts/TechnicalIndicators';
+import Watchlist from '@/components/features/Watchlist';
+import StockScreener from '@/components/features/StockScreener';
+import StockDetail from '@/components/features/StockDetail';
+import RealtimeTicker from '@/components/features/RealtimeTicker';
+import NewsSentimentChart from '@/components/features/NewsSentimentChart';
+import RiskDashboard from '@/components/features/RiskDashboard';
+import PerformanceReports from '@/components/features/PerformanceReports';
+import AlertsSystem from '@/components/features/AlertsSystem';
+import BacktestingEngine from '@/components/features/BacktestingEngine';
 
 interface Agent {
   id: string;
@@ -74,7 +83,7 @@ function LoadingPlaceholder() {
 }
 
 interface TabConfig {
-  id: 'portfolio' | 'market' | 'news' | 'search' | 'agents';
+  id: 'portfolio' | 'market' | 'news' | 'search' | 'agents' | 'watchlist' | 'screener' | 'detail' | 'ticker' | 'sentiment' | 'risk' | 'reports' | 'alerts' | 'backtest';
   label: string;
 }
 
@@ -83,6 +92,14 @@ const TABS: TabConfig[] = [
   { id: 'market', label: 'Markets' },
   { id: 'news', label: 'News' },
   { id: 'search', label: 'Discovery' },
+  { id: 'watchlist', label: 'Watchlist' },
+  { id: 'screener', label: 'Stock Screener' },
+  { id: 'ticker', label: 'Live Ticker' },
+  { id: 'sentiment', label: 'Sentiment' },
+  { id: 'risk', label: 'Risk' },
+  { id: 'reports', label: 'Reports' },
+  { id: 'alerts', label: 'Alerts' },
+  { id: 'backtest', label: 'Backtest' },
   { id: 'agents', label: 'Agents' },
 ];
 
@@ -107,7 +124,7 @@ function AgentCard({ agent }: { agent: Agent }) {
 
 export default function Dashboard() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'portfolio' | 'market' | 'news' | 'search' | 'agents'>('portfolio');
+  const [activeTab, setActiveTab] = useState<'portfolio' | 'market' | 'news' | 'search' | 'agents' | 'watchlist' | 'screener' | 'detail' | 'ticker' | 'sentiment' | 'risk' | 'reports' | 'alerts' | 'backtest'>('portfolio');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-slate-900 to-black text-white relative overflow-hidden">
@@ -268,6 +285,87 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Watchlist Tab */}
+        {activeTab === 'watchlist' && (
+          <div className="animate-fadeIn">
+            <Suspense fallback={<LoadingPlaceholder />}>
+              <Watchlist />
+            </Suspense>
+          </div>
+        )}
+
+        {/* Stock Screener Tab */}
+        {activeTab === 'screener' && (
+          <div className="animate-fadeIn">
+            <Suspense fallback={<LoadingPlaceholder />}>
+              <StockScreener />
+            </Suspense>
+          </div>
+        )}
+
+        {/* Stock Detail Tab */}
+        {activeTab === 'detail' && (
+          <div className="animate-fadeIn">
+            <Suspense fallback={<LoadingPlaceholder />}>
+              <StockDetail symbol="AAPL" />
+            </Suspense>
+          </div>
+        )}
+
+        {/* Live Ticker Tab */}
+        {activeTab === 'ticker' && (
+          <div className="animate-fadeIn">
+            <Suspense fallback={<LoadingPlaceholder />}>
+              <RealtimeTicker />
+            </Suspense>
+          </div>
+        )}
+
+        {/* Sentiment Analysis Tab */}
+        {activeTab === 'sentiment' && (
+          <div className="animate-fadeIn">
+            <Suspense fallback={<LoadingPlaceholder />}>
+              <NewsSentimentChart />
+            </Suspense>
+          </div>
+        )}
+
+        {/* Risk Dashboard Tab */}
+        {activeTab === 'risk' && (
+          <div className="animate-fadeIn">
+            <Suspense fallback={<LoadingPlaceholder />}>
+              <RiskDashboard />
+            </Suspense>
+          </div>
+        )}
+
+        {/* Performance Reports Tab */}
+        {activeTab === 'reports' && (
+          <div className="animate-fadeIn">
+            <Suspense fallback={<LoadingPlaceholder />}>
+              <PerformanceReports />
+            </Suspense>
+          </div>
+        )}
+
+        {/* Alerts System Tab */}
+        {activeTab === 'alerts' && (
+          <div className="animate-fadeIn">
+            <Suspense fallback={<LoadingPlaceholder />}>
+              <AlertsSystem />
+            </Suspense>
+          </div>
+        )}
+
+        {/* Backtesting Engine Tab */}
+        {activeTab === 'backtest' && (
+          <div className="animate-fadeIn">
+            <Suspense fallback={<LoadingPlaceholder />}>
+              <BacktestingEngine />
+            </Suspense>
           </div>
         )}
 
