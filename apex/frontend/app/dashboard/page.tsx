@@ -106,9 +106,18 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<'portfolio' | 'market' | 'news' | 'search' | 'agents'>('portfolio');
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-gradient-to-br from-black via-slate-900 to-black text-white relative overflow-hidden">
+      {/* Animated gradient background elements */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+      </div>
+
+      {/* Content wrapper */}
+      <div className="relative z-10">
       {/* Unified Header with Navigation */}
-      <nav className="liquid-glass fixed top-0 left-0 right-0 z-50 border-b border-white/10 backdrop-blur-md">
+      <nav className="liquid-glass fixed top-0 left-0 right-0 z-40 border-b border-white/10 backdrop-blur-md">
         <div className="px-6 md:px-12 lg:px-16 py-6">
           {/* Top Row: Logo and Home Button */}
           <div className="flex items-center justify-between mb-6">
@@ -288,6 +297,7 @@ export default function Dashboard() {
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   );
